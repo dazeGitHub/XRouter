@@ -1,4 +1,4 @@
-package com.toys.arouter;
+package com.toys.xrouter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,19 +21,19 @@ import dalvik.system.DexFile;
  *     version: 1.0
  * </pre>
  */
-public class ARouter {
-    public static ARouter aRouter = new ARouter();
+public class XRouter {
+    public static XRouter xRouter = new XRouter();
 
     //装载 Activity 的容器也叫路由表
     private Map<String, Class<? extends Activity>> map;
     private Context context;
 
-    private ARouter() {
+    private XRouter() {
         map = new HashMap();
     }
 
-    public static ARouter getInstance() {
-        return aRouter;
+    public static XRouter getInstance() {
+        return xRouter;
     }
 
     /**

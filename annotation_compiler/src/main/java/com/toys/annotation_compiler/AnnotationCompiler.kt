@@ -91,8 +91,8 @@ class AnnotationCompiler : AbstractProcessor() {
             writer = sourceFile.openWriter()
             val stringBuffer = StringBuffer()
             stringBuffer.append("package com.toys.utils;\n")
-            stringBuffer.append("import com.toys.arouter.IRouter;\n")
-            stringBuffer.append("import com.toys.arouter.ARouter;\n")
+            stringBuffer.append("import com.toys.xrouter.IRouter;\n")
+            stringBuffer.append("import com.toys.xrouter.XRouter;\n")
             //如果 ActivityUtilxxx 要生成多个，则需要让它们实现 IRouter 接口，
             stringBuffer.append("public class $utilName implements IRouter {\n")
             stringBuffer.append("@Override \n")
@@ -101,7 +101,7 @@ class AnnotationCompiler : AbstractProcessor() {
             while (iterator.hasNext()) {
                 val key = iterator.next()
                 val activityName = annnKeyClassMap[key]
-                stringBuffer.append("ARouter.getInstance().addActivity(\"$key\", $activityName);\n")
+                stringBuffer.append("XRouter.getInstance().addActivity(\"$key\", $activityName);\n")
             }
             stringBuffer.append("}\n}")
             writer.write(stringBuffer.toString())
