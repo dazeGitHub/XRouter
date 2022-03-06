@@ -1,0 +1,30 @@
+ext{
+    android = [
+            compileSdkVersion: 30,
+            buildToolsVersion: "29.0.0",
+            minSdkVersion    : 21,
+            targetSdkVersion : 30,
+            versionCode : 1,
+            versionName : '1.0',
+            is_application : false,
+    ]
+
+    dependencies = [
+        publicImplementation : [
+            'androidx.appcompat:appcompat:1.2.0',
+            'androidx.constraintlayout:constraintlayout:2.0.4',
+//            'androidx.core:core-ktx:1.3.2',
+//            'org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version'
+
+            'junit:junit:4.12',
+            'androidx.test.ext:junit:1.1.2',
+            'androidx.test.espresso:espresso-core:3.3.0'
+        ],
+        localLib : [
+            ":base",
+            ":arouter",
+            ":annotation",
+            ":common"
+        ]
+    ]
+}
