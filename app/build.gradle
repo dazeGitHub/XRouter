@@ -1,7 +1,6 @@
-plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
@@ -33,4 +32,19 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    //引入公共库
+    implementation rootProject.ext.dependencies.publicImplementation
+
+    //引入本地库 ( 因为是本地库所以需要使用 implementation project{it} )
+    rootProject.ext.dependencies.localLib.each {
+        implementation project (it)
+    }
+
+//    不能这么干, 报错 : Caused by: org.gradle.api.UnknownProjectException: Project with path 'annotation_compiler' could not be found in project ':app'
+//    rootProject.ext.dependencies.annotationProcessor.each {
+//        kapt project (it)   //kapt project(path : ':annotation_compiler')
+//    }
+
+    kapt project(path : ':annotation_compiler')
 }
