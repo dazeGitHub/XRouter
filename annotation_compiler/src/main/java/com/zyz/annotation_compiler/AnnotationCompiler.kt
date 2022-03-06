@@ -1,8 +1,8 @@
-package com.toys.annotation_compiler
+package com.zyz.annotation_compiler
 
 import com.google.auto.service.AutoService
 import javax.tools.Diagnostic
-import com.toys.annotation.BindPath
+import com.zyz.annotation.BindPath
 import java.io.IOException
 import java.io.Writer
 import java.util.HashMap
@@ -14,7 +14,7 @@ import javax.lang.model.element.TypeElement
 /**
  * 目的 : 在这里生成 Kotlin 代码
  */
-@AutoService(value = [Processor::class]) //@SupportedAnnotationTypes({"com.toys.annotation.BindPath"})
+@AutoService(value = [Processor::class]) //@SupportedAnnotationTypes({"com.zyz.annotation.BindPath"})
 //@SupportedSourceVersion(value = SourceVersion.RELEASE_8)
 class AnnotationCompiler : AbstractProcessor() {
     //使用 filter 对象来生成 Kotlin 文件代码，filter 对象在 init() 方法中初始化，并可以直接从 processingEnv 得到
@@ -87,12 +87,12 @@ class AnnotationCompiler : AbstractProcessor() {
         //生成文件
         try {
             val utilName = "ActivityUtil" + System.currentTimeMillis() //这个 ActivityUtilxxx 的数量是和有多少依赖 annotation_compiler 的模块相关的，加上时间戳是为了防止类名重复
-            val sourceFile = filer!!.createSourceFile("com.toys.utils.$utilName") //注意不要写成 filer.createClassFile()
+            val sourceFile = filer!!.createSourceFile("com.zyz.utils.$utilName") //注意不要写成 filer.createClassFile()
             writer = sourceFile.openWriter()
             val stringBuffer = StringBuffer()
-            stringBuffer.append("package com.toys.utils;\n")
-            stringBuffer.append("import com.toys.xrouter.IRouter;\n")
-            stringBuffer.append("import com.toys.xrouter.XRouter;\n")
+            stringBuffer.append("package com.zyz.utils;\n")
+            stringBuffer.append("import com.zyz.xrouter.IRouter;\n")
+            stringBuffer.append("import com.zyz.xrouter.XRouter;\n")
             //如果 ActivityUtilxxx 要生成多个，则需要让它们实现 IRouter 接口，
             stringBuffer.append("public class $utilName implements IRouter {\n")
             stringBuffer.append("@Override \n")

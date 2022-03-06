@@ -2,7 +2,7 @@ package com.zyz.xrouter
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.toys.annotation.BindPath
+import com.zyz.annotation.BindPath
 
 @BindPath("main/main")
 class MainActivity : AppCompatActivity() {
