@@ -1,0 +1,27 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.dazeGitHub'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    //as 版本 > 3.4
+//    kapt 'com.google.auto.service:auto-service:1.0-rc4'
+//    compileOnly 'com.google.auto.service:auto-service:1.0-rc3'
+    //as 版本 < 3.4
+//    implementation 'com.google.auto.service:auto-service:1.0-rc3'
+
+    //使用 kotlin
+    kapt 'com.google.auto.service:auto-service:1.0-rc7'
+    compileOnly'com.google.auto.service:auto-service:1.0-rc7'
+
+    //因为在注解处理器模块中需要搜索注解，所以还需要依赖 annotation
+    implementation project(path: ':annotation')
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
