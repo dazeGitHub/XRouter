@@ -1,60 +1,55 @@
-package com.zyz.xrouter;
+package com.zyz.xrouter
 
-import android.app.Activity;
-import android.content.Context;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import dalvik.system.DexFile;
+import android.app.Activity
+import android.content.Context
+import dalvik.system.DexFile
+import java.io.IOException
 
 /**
  * <pre>
- *     author : ZYZ
- *     e-mail : zyz163mail@163.com
- *     time   : 2021/04/30
- *     desc   :
- *     version: 1.0
- * </pre>
+ * author : ZYZ
+ * e-mail : zyz163mail@163.com
+ * time   : 2021/04/30
+ * desc   :
+ * version: 1.0
+</pre> *
  */
-public class XRouter {
-    public static XRouter xRouter = new XRouter();
-
+class XRouter private constructor() {
     //装载 Activity 的容器也叫路由表
-    private Map<String, Class<? extends Activity>> map;
-    private Context context;
+    private val map: MutableMap<String?, Class<out Activity?>?>
+    private var appContext: Context? = null
 
-    private XRouter() {
-        map = new HashMap();
+    companion object {
+        private var xRouter = XRouter()
+
+        fun getInstance(): XRouter {
+            return xRouter
+        }
     }
 
-    public static XRouter getInstance() {
-        return xRouter;
+    init {
+        map = HashMap()
     }
 
     /**
      * app 模块的 Application 调用该初始化方法
      *
-     * @param context
+     * @param appContext
      */
-    public void init(Context context) {
-        this.context = context;
-        List<String> className = getClassName("com.toys.utils");
-        for (String str : className) {
+    fun init(appContext: Context?) {
+        this.appContext = appContext
+        val className = getClassName("com.toys.utils")
+        for (str in className) {
             try {
-                Class<?> aClass = Class.forName(str);
+                val aClass = Class.forName(str)
                 //进行第二步验证，这个类是否是 IRouter 接口的实现类
-                if (IRouter.class.isAssignableFrom(aClass)) {
+                if (IRouter::class.java.isAssignableFrom(aClass)) {
                     //通过 newInstance() 得到工具类的实例，并通过接口的引用指向子类的实例，否则还需要反射它的方法再执行，比较麻烦
-                    IRouter iRouter = (IRouter) aClass.newInstance();
-                    iRouter.addActivity();
+                    val iRouter = aClass.newInstance() as IRouter
+                    iRouter.addActivity()
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -65,24 +60,22 @@ public class XRouter {
      * @param packageName
      * @return
      */
-    private List<String> getClassName(String packageName) {
+    private fun getClassName(packageName: String): List<String> {
         //创建一个 class 对象的集合
-        List<String> classList = new ArrayList<>();
+        val classList: MutableList<String> = ArrayList()
         try {
-            DexFile df = new DexFile(context.getPackageCodePath());
-            Enumeration<String> entries = df.entries();
+            val df = DexFile(appContext!!.packageCodePath)
+            val entries = df.entries()
             while (entries.hasMoreElements()) {
-                String className = (String) entries.nextElement();
+                val className = entries.nextElement() as String
                 if (className.contains(packageName)) {
-                    classList.add(className);
+                    classList.add(className)
                 }
             }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
-
-        return classList;
+        return classList
     }
 
     /**
@@ -91,9 +84,9 @@ public class XRouter {
      * @param key
      * @param clazz
      */
-    public void addActivity(String key, Class<? extends Activity> clazz) {
+    fun addActivity(key: String?, clazz: Class<out Activity?>?) {
         if (key != null && clazz != null && !map.containsKey(key)) {
-            map.put(key, clazz);
+            map[key] = clazz
         }
     }
 
@@ -103,10 +96,9 @@ public class XRouter {
      * @param key
      * @return
      */
-    public Class getActivity(String key) {
-        if (key != null && map.containsKey(key)) {
-            return map.get(key);
-        }
-        return null;
+    fun getActivity(key: String?): Class<*>? {
+        return if (key != null && map.containsKey(key)) {
+            map[key]
+        } else null
     }
 }

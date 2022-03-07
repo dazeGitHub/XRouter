@@ -101,7 +101,7 @@ class AnnotationCompiler : AbstractProcessor() {
             while (iterator.hasNext()) {
                 val key = iterator.next()
                 val activityName = annnKeyClassMap[key]
-                stringBuffer.append("XRouter.getInstance().addActivity(\"$key\", $activityName);\n")
+                stringBuffer.append("XRouter.Companion.getInstance().addActivity(\"$key\", $activityName);\n")
             }
             stringBuffer.append("}\n}")
             writer.write(stringBuffer.toString())
