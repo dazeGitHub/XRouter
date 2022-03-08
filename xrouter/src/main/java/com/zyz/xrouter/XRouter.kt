@@ -3,7 +3,9 @@ package com.zyz.xrouter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import dalvik.system.DexFile
 import java.io.IOException
 
@@ -17,12 +19,15 @@ import java.io.IOException
 </pre> *
  */
 class XRouter private constructor() {
+    private val TAG: String = this.javaClass.name
+
     //装载 Activity 的容器也叫路由表
     private val map: MutableMap<String?, Class<out Activity?>?>
     private var appContext: Context? = null
 
     companion object {
         private var xRouter = XRouter()
+        val JUMP_JSON_KEY = "JUMP_JSON_KEY" //跳转界面时传 json 字符串时使用
 
         fun getInstance(): XRouter {
             return xRouter
@@ -105,7 +110,7 @@ class XRouter private constructor() {
     }
 
     /**
-     * 跳转窗体的方法
+     * 使用 key 和 bundle 跳转界面
      * @param key
      * @param bundle
      */
@@ -116,5 +121,38 @@ class XRouter private constructor() {
             intent.putExtras(bundle)
         }
         context.startActivity(intent)
+    }
+
+    /**
+     * 使用路由跳转界面 (前面的 login 是域名, 后边的 login 是路径)
+     * url         :   dm://login/login?username=user1&pwd=pwd1
+     * scheme      :   协议, 例如 dm
+     * jsonValue   :   如果不想使用 url, 那么就直接传一个 json 字符串过来, 并通过 JUMP_JSON_KEY 获取该 json 字符串
+     */
+    fun jumpActivity(context: Context, url: String?, scheme: String? = null, jsonValue: String? = null) {
+        url?.let {
+            val uri: Uri = Uri.parse(it)
+            val uriScheme: String? = uri.scheme
+            if (scheme != null && uriScheme != scheme) {
+                Log.e(TAG, "XRouter jumpActivity() scheme != uriScheme, cannot jump !")
+                return
+            }
+            val hostPath = uri.host + ":" + uri.port + uri.path
+            Bundle().let { bundle ->
+                if (jsonValue == null) {
+                    for (key in uri.queryParameterNames) {
+                        Log.i("zpan", "XRouter jumpActivity() key = $key")
+                        val paramValue: String? = uri.getQueryParameter(key)
+                        bundle.putString(key, paramValue)
+                    }
+                } else {
+                    bundle.putString(JUMP_JSON_KEY, jsonValue)
+                }
+                Log.d(TAG, "XRouter jumpActivity() hostPath = $hostPath ")
+                jumpActivity(context, key = hostPath, bundle = bundle)
+            }
+        } ?: let {
+            Log.e(TAG, "XRouter jumpActivity() url == null, cannot jump !")
+        }
     }
 }
