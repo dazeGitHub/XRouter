@@ -2,6 +2,8 @@ package com.zyz.xrouter
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import dalvik.system.DexFile
 import java.io.IOException
 
@@ -100,5 +102,19 @@ class XRouter private constructor() {
         return if (key != null && map.containsKey(key)) {
             map[key]
         } else null
+    }
+
+    /**
+     * 跳转窗体的方法
+     * @param key
+     * @param bundle
+     */
+    fun jumpActivity(context: Context, key: String?, bundle: Bundle?) {
+        val aClass = map[key] ?: return
+        val intent = Intent(context, aClass)
+        if (bundle != null) {
+            intent.putExtras(bundle)
+        }
+        context.startActivity(intent)
     }
 }
