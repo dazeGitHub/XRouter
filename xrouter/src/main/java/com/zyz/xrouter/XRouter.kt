@@ -40,7 +40,7 @@ class XRouter private constructor() {
      */
     fun init(appContext: Context?) {
         this.appContext = appContext
-        val className = getClassName("com.toys.utils")
+        val className = getClassName("com.zyz.utils")
         for (str in className) {
             try {
                 val aClass = Class.forName(str)
