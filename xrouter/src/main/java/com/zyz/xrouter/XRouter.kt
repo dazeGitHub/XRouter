@@ -22,8 +22,8 @@ class XRouter private constructor() {
     private val TAG: String = this.javaClass.name
 
     //装载 Activity 的容器也叫路由表
-    private val map: MutableMap<String?, Class<out Activity?>?>
-    private var appContext: Context? = null
+    private val mActivityClassMap: MutableMap<String?, Class<out Activity?>?>
+    private var mAppContext: Context? = null
 
     companion object {
         private var xRouter = XRouter()
@@ -35,7 +35,7 @@ class XRouter private constructor() {
     }
 
     init {
-        map = HashMap()
+        mActivityClassMap = HashMap()
     }
 
     /**
@@ -44,8 +44,8 @@ class XRouter private constructor() {
      * @param appContext
      */
     fun init(appContext: Context?) {
-        this.appContext = appContext
-        val className = getClassName("com.zyz.utils")
+        this.mAppContext = appContext
+        val className = getClassNameList("com.zyz.utils")
         for (str in className) {
             try {
                 val aClass = Class.forName(str)
@@ -67,15 +67,16 @@ class XRouter private constructor() {
      * @param packageName
      * @return
      */
-    private fun getClassName(packageName: String): List<String> {
+    private fun getClassNameList(packageName: String): List<String> {
         //创建一个 class 对象的集合
         val classList: MutableList<String> = ArrayList()
         try {
-            val df = DexFile(appContext!!.packageCodePath)
+            val df = DexFile(mAppContext!!.packageCodePath)
             val entries = df.entries()
             while (entries.hasMoreElements()) {
                 val className = entries.nextElement() as String
                 if (className.contains(packageName)) {
+                    Log.d(TAG,"getClassNameList className.contains(packageName) className = $className packageName = $packageName")
                     classList.add(className)
                 }
             }
@@ -92,8 +93,8 @@ class XRouter private constructor() {
      * @param clazz
      */
     fun addActivity(key: String?, clazz: Class<out Activity?>?) {
-        if (key != null && clazz != null && !map.containsKey(key)) {
-            map[key] = clazz
+        if (key != null && clazz != null && !mActivityClassMap.containsKey(key)) {
+            mActivityClassMap[key] = clazz
         }
     }
 
@@ -104,18 +105,22 @@ class XRouter private constructor() {
      * @return
      */
     fun getActivity(key: String?): Class<*>? {
-        return if (key != null && map.containsKey(key)) {
-            map[key]
+        return if (key != null && mActivityClassMap.containsKey(key)) {
+            mActivityClassMap[key]
         } else null
     }
 
     /**
      * 使用 key 和 bundle 跳转界面
-     * @param key
+     * @param url
      * @param bundle
      */
-    fun jumpActivity(context: Context, key: String?, bundle: Bundle?) {
-        val aClass = map[key] ?: return
+    fun jumpActivity(context: Context, url: String?, bundle: Bundle?) {
+        val aClass = mActivityClassMap[url]
+        if(aClass == null){
+            Log.e(TAG, "XRouter jumpActivity mActivityClassMap.size = ${mActivityClassMap.size} aclass == null return")
+            return;
+        }
         val intent = Intent(context, aClass)
         if (bundle != null) {
             intent.putExtras(bundle)
@@ -129,7 +134,7 @@ class XRouter private constructor() {
      * scheme      :   协议, 例如 dm
      * jsonValue   :   如果不想使用 url, 那么就直接传一个 json 字符串过来, 并通过 JUMP_JSON_KEY 获取该 json 字符串
      */
-    fun jumpActivity(context: Context, url: String?, scheme: String? = null, jsonValue: String? = null) {
+    fun jumpActivity(context: Context, url: String?, scheme: String? = null) {
         url?.let {
             val uri: Uri = Uri.parse(it)
             val uriScheme: String? = uri.scheme
@@ -137,19 +142,17 @@ class XRouter private constructor() {
                 Log.e(TAG, "XRouter jumpActivity() scheme != uriScheme, cannot jump !")
                 return
             }
-            val hostPath = uri.host + ":" + uri.port + uri.path
+            val hostPath = uri.host + uri.path
             Bundle().let { bundle ->
-                if (jsonValue == null) {
-                    for (key in uri.queryParameterNames) {
+                uri.queryParameterNames.let{queryParameterNames ->
+                    for (key in queryParameterNames) {
                         Log.i("zpan", "XRouter jumpActivity() key = $key")
                         val paramValue: String? = uri.getQueryParameter(key)
                         bundle.putString(key, paramValue)
                     }
-                } else {
-                    bundle.putString(JUMP_JSON_KEY, jsonValue)
+                    Log.d(TAG, "XRouter jumpActivity() hostPath = $hostPath ")
+                    jumpActivity(context, url = hostPath, bundle = bundle)
                 }
-                Log.d(TAG, "XRouter jumpActivity() hostPath = $hostPath ")
-                jumpActivity(context, key = hostPath, bundle = bundle)
             }
         } ?: let {
             Log.e(TAG, "XRouter jumpActivity() url == null, cannot jump !")
