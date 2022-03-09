@@ -138,11 +138,11 @@ class XRouter private constructor() {
         url?.let {
             val uri: Uri = Uri.parse(it)
             val uriScheme: String? = uri.scheme
-            if(scheme == null){
+            if(uriScheme == null){
                 Log.e(TAG, "XRouter jumpActivity() scheme == null, cannot jump !")
                 return
             }
-            if (uriScheme != scheme) {
+            if (scheme!= null && uriScheme != scheme) {
                 Log.e(TAG, "XRouter jumpActivity() scheme != uriScheme, cannot jump !")
                 return
             }

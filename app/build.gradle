@@ -41,6 +41,10 @@ dependencies {
         implementation project (it)
     }
 
+    if(!rootProject.ext.android.is_application){
+        implementation project(path: ':login')
+    }
+
 //    不能这么干, 报错 : Caused by: org.gradle.api.UnknownProjectException: Project with path 'annotation_compiler' could not be found in project ':app'
 //    rootProject.ext.dependencies.annotationProcessor.each {
 //        kapt project (it)   //kapt project(path : ':annotation_compiler')
