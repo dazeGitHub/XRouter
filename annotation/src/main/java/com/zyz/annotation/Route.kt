@@ -11,4 +11,4 @@ package com.zyz.annotation
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
 @kotlin.annotation.Retention(AnnotationRetention.BINARY)
-annotation class BindPath(val key: String)
+annotation class Route(val key: String)

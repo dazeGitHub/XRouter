@@ -3,9 +3,10 @@ package com.zyz.xrouter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import com.zyz.annotation.BindPath
+import com.toys.common.Constants
+import com.zyz.annotation.Route
 
-@BindPath("main/main")
+@Route(Constants.RouterPath.MAIN)
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

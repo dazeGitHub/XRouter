@@ -21,13 +21,11 @@ import java.io.IOException
 class XRouter private constructor() {
     private val TAG: String = this.javaClass.name
 
-    //装载 Activity 的容器也叫路由表
-    private val mActivityClassMap: MutableMap<String?, Class<out Activity?>?>
     private var mAppContext: Context? = null
+    private val mActivityClassMap: MutableMap<String?, Class<out Activity?>?>   //装载 Activity 的容器也叫路由表
 
     companion object {
         private var xRouter = XRouter()
-        val JUMP_JSON_KEY = "JUMP_JSON_KEY" //跳转界面时传 json 字符串时使用
 
         fun getInstance(): XRouter {
             return xRouter

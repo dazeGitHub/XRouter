@@ -17,6 +17,7 @@ ext{
 //            'org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version'
         ],
         localLib : [
+            ":common",
             ":xrouter",
             ":annotation",
         ],

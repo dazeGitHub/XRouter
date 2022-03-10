@@ -1,4 +1,4 @@
-package com.zyz.xrouter
+package com.toys.common
 
 object Constants {
     const val ROUTER_SCHEME = "dm://"
