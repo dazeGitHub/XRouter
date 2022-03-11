@@ -1,6 +1,6 @@
 # XRouter
 
-支持 kotlin 的注解处理器的路由框架
+支持 kotlin 的注解处理器的简单的路由框架，在组件化项目中使用可以参考 : https://github.com/dazeGitHub/TestComponentDev3
 
 ##### 1. build.gradle 添加依赖
 
