@@ -2,10 +2,7 @@ package com.zyz.annotation_compiler
 
 import com.google.auto.service.AutoService
 import com.zyz.annotation.Autowired
-import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStreamWriter
-import java.io.Writer
+import java.io.*
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
@@ -76,9 +73,9 @@ class AutoWiredProcessor() : BaseProcessor() {
     private fun generateActivityViewBinding(activityEleMap: MutableMap<String, MutableList<Element>>){
         messager?.printMessage(Diagnostic.Kind.WARNING, "AutoWiredProcessor generateActivityViewBinding activityVarEleMap.size = ${activityEleMap.size} \n")
 
-        var writer: Writer? = null
+        var javaFileWriter: Writer? = null
+        var ktFileRandomAccessFile: RandomAccessFile? = null
         val iterator: Iterator<String> = activityEleMap.keys.iterator()
-        var tempSourceFile : JavaFileObject? = null
 
         while (iterator.hasNext()) {
             val activityName = iterator.next()
@@ -87,48 +84,56 @@ class AutoWiredProcessor() : BaseProcessor() {
             val enclosingElement = elementsList!![0].enclosingElement as TypeElement
             val packageName = processingEnv.elementUtils.getPackageOf(enclosingElement).toString()
             try {
-                val sourceFile : JavaFileObject = mJavaFiler!!.createSourceFile(packageName + "." + activityName + "_ViewBinding")
-                tempSourceFile = sourceFile
-                writer = sourceFile.openWriter()
-                writer.write("package $packageName;\n")
-                writer.write("import android.os.Bundle;\n")
-                writer.write("import com.zyz.xrouter.IBinder;\n")
-                writer.write("import com.zyz.xrouter.IJsonTransfer;\n")
+                //这里新建个 java 文件并写入并没有实际意义, 只是为了获取该 java 文件的绝对路径, 从而能写入一个新的 kt 文件
+                val sourceFile : JavaFileObject = mJavaFiler!!.createSourceFile(packageName + "." + activityName + "_VB") //_ViewBinding
+                javaFileWriter = sourceFile.openWriter()
+                javaFileWriter.write("package $packageName;\n")
+                javaFileWriter.close()
+
+                messager?.printMessage(Diagnostic.Kind.WARNING, "AutoWiredProcessor generateActivityViewBinding sourceFile.name = ${sourceFile.name} \n")
+                val resultJavaFile = File(sourceFile.name.replace("_VB.java","_ViewBinding.kt"))
+                ktFileRandomAccessFile = RandomAccessFile(resultJavaFile, "rw")
+
+                val importPackageStr = "package $packageName\n"
+
+                ktFileRandomAccessFile.write(importPackageStr.toByteArray())
+                ktFileRandomAccessFile.write("import android.os.Bundle\n".toByteArray())
+                ktFileRandomAccessFile.write("import com.zyz.xrouter.IBinder\n".toByteArray())
+                ktFileRandomAccessFile.write("import com.zyz.xrouter.IJsonTransfer\n\n".toByteArray())
+
+                ktFileRandomAccessFile.write(("class " + activityName + "_ViewBinding : IBinder<" + packageName + "." + activityName + ">{\n").toByteArray())
+                ktFileRandomAccessFile.write(("    override fun bind(target: $packageName.$activityName, iJsonTransfer: IJsonTransfer?) { \n").toByteArray())
+                ktFileRandomAccessFile.write(("        val bundle = target.intent.getExtras() \n").toByteArray())
+                //target.tvText=(android.widget.TextView)target.findViewById(2131165325);
+                for (element: Element in elementsList) {
+//                  printElementInfo(element)
+
+                    //得到名字
+                    val variableName = element.simpleName.toString()
+                    //得到注解的 name 的值
+                    val annoNameValue: String = element.getAnnotation(Autowired::class.java).value
+                    //得到类型
+                    val typeMirror = element.asType()
+
+                    messager?.printMessage(Diagnostic.Kind.WARNING, "AutoWiredProcessor element.javaClass.isPrimitive = ${element.javaClass.isPrimitive} typeMirror = ${typeMirror}\n")
+                    //警告: AutoWiredProcessor element.javaClass.isPrimitive = false typeMirror = java.lang.Integer 或 com.toys.bean.User
+                    messager?.printMessage(Diagnostic.Kind.WARNING, "AutoWiredProcessor element.javaClass = ${element.javaClass} keyName = ${annoNameValue}\n")
+                    //警告: AutoWiredProcessor element.javaClass = class com.sun.tools.javac.code.Symbol$VarSymbol keyName = username
+                    messager?.printMessage(Diagnostic.Kind.WARNING, "typeMirror.javaClass = ${typeMirror.javaClass}\n")
+                    //typeMirror.javaClass = class com.sun.tools.javac.code.Type$ClassType
+
+                    val convertStr = getFieldInjectTypeConvertStr(typeMirror)
+                    if(convertStr.isNotEmpty() || ("java.lang.String" == typeMirror.toString())){ //如果是基本类型 或 字符串, 直接强转
+                        ktFileRandomAccessFile.write("        target.$variableName = bundle?.getString(\"${annoNameValue}\")${convertStr}".toByteArray())
+                    } else{
+                        ktFileRandomAccessFile.write("        target.$variableName = iJsonTransfer?.transJson2Obj(bundle?.getString(\"${annoNameValue}\"), ${typeMirror}::class.java) as ${typeMirror}?".toByteArray()) // ${typeMirror}.class)
+                    }
+                    ktFileRandomAccessFile.write("\n".toByteArray())
+                }
+                ktFileRandomAccessFile.write("\n}}".toByteArray())
 
 
-//                writer.write("class " + activityName + "_ViewBinding : IBinder<" + packageName + "." + activityName + ">{\n")
-//                writer.write(("    override fun bind(target: $packageName.$activityName, iJsonTransfer: IJsonTransfer?) { \n"))
-//                writer.write(("        val bundle = target.intent.getExtras(); \n"))
-//                //target.tvText=(android.widget.TextView)target.findViewById(2131165325);
-//                for (element: Element in elementsList) {
-////                  printElementInfo(element)
-//
-//                    //得到名字
-//                    val variableName = element.simpleName.toString()
-//                    //得到注解的 name 的值
-//                    val annoNameValue: String = element.getAnnotation(Autowired::class.java).value
-//                    //得到类型
-//                    val typeMirror = element.asType()
-//
-//                    messager?.printMessage(Diagnostic.Kind.WARNING, "AutoWiredProcessor element.javaClass.isPrimitive = ${element.javaClass.isPrimitive} typeMirror = ${typeMirror}\n")
-//                    //警告: AutoWiredProcessor element.javaClass.isPrimitive = false typeMirror = java.lang.Integer
-//                    messager?.printMessage(Diagnostic.Kind.WARNING, "AutoWiredProcessor element.javaClass = ${element.javaClass} keyName = ${annoNameValue}\n")
-//                    //警告: AutoWiredProcessor element.javaClass = class com.sun.tools.javac.code.Symbol$VarSymbol keyName = username
-//                    messager?.printMessage(Diagnostic.Kind.WARNING, "typeMirror.javaClass = ${typeMirror.javaClass}\n")
-//                    //typeMirror.javaClass = class com.sun.tools.javac.code.Type$ClassType
-//
-//                    val convertStr = getFieldInjectTypeConvertStr(typeMirror)
-//                    if(convertStr.isNotEmpty() || ("java.lang.String" == typeMirror.toString())){ //如果是基本类型 或 字符串, 直接强转
-//                        writer.write("        target.$variableName = bundle?.getString(\"${annoNameValue}\")${convertStr};")
-//                    } else{
-//                        writer.write("        target.$variableName = iJsonTransfer?.transJson2Obj(bundle?.getString(\"${annoNameValue}\"), \"${getFieldKtClass(typeMirror)}\");") // ${typeMirror}.class)
-//                    }
-//                    writer.write("\n")
-//                }
-//                writer.write("\n}}")
-
-
-                //重命名 XXActivityBinding.java 为 kotlin 文件, 防止为字段设置值时还需要加 @JvmField 注解
+                //重命名 XXActivityBinding.java 为 kotlin 文件, 防止为字段设置值时还需要加 @JvmField 注解, 但是直接重命名会报错, 所以只能采用单独新建个 kt 文件的方式写入文件
                 messager?.printMessage(Diagnostic.Kind.WARNING, "AutoWiredProcessor sourceFile.toUri() = ${ sourceFile.toUri()} sourceFile.name = ${sourceFile.name}\n")
 //              sourceFile.toUri() = file:///G:/Project/AsProject/xxx/xxx/LoginActivity_ViewBinding.java
 //              sourceFile.name = G:\Project\AsProject\xxx\LoginActivity_ViewBinding.java
@@ -138,12 +143,11 @@ class AutoWiredProcessor() : BaseProcessor() {
                 e.printStackTrace()
                 messager?.printMessage(Diagnostic.Kind.WARNING, "AutoWiredProcessor generateActivityViewBinding() Exception errMsg = ${e.message} \n")
             } finally {
-                if (writer != null) {
-                    try {
-                        writer.close()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                try {
+                    javaFileWriter?.close()
+                    ktFileRandomAccessFile?.close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
 
@@ -159,16 +163,6 @@ class AutoWiredProcessor() : BaseProcessor() {
 //                }
 //            }
 
-            tempSourceFile?.let{
-                val resultJavaFile = File(tempSourceFile.name.replace(".java","") + "Temp.kt")
-
-                val fop = FileOutputStream(resultJavaFile)
-                val ktOsWriter = OutputStreamWriter(fop, "UTF-8")
-                ktOsWriter.append("package $packageName;\n")
-                ktOsWriter.close()
-                fop.close()
-
-            }
         }
         messager?.printMessage(Diagnostic.Kind.WARNING, "AutoWiredProcessor generateActivityViewBinding() execute finish ! \n")
     }

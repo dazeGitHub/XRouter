@@ -41,6 +41,10 @@ dependencies {
         implementation project (it)
     }
 
+    rootProject.ext.dependencies.router.each {
+        implementation project (it)
+    }
+
     if(!rootProject.ext.android.is_application){
         implementation project(path: ':login')
     }

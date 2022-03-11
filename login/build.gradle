@@ -50,5 +50,8 @@ dependencies {
         implementation project(it)
     }
 
+    rootProject.ext.dependencies.router.each {
+        implementation project (it)
+    }
     kapt project(path : ':annotation_compiler')
 }

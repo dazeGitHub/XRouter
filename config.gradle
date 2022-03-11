@@ -15,12 +15,18 @@ ext{
             'androidx.constraintlayout:constraintlayout:2.0.4',
 //            'androidx.core:core-ktx:1.3.2',
 //            'org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version'
+            'com.google.code.gson:gson:2.6.2'
         ],
         localLib : [
+            ":base",
             ":common",
+        ],
+        //需要将 router 单独拆开, 否则 common 库引用 localLib 会导致循环引用 : org.gradle.api.CircularReferenceException: Circular dependency between the following tasks:
+        router : [
             ":xrouter",
             ":annotation",
-        ],
+        ]
+
 //        annotationProcessor : [
 //            "annotation_compiler"
 //        ]

@@ -74,7 +74,7 @@ class XRouter private constructor() {
             while (entries.hasMoreElements()) {
                 val className = entries.nextElement() as String
                 if (className.contains(packageName)) {
-                    Log.d(TAG,"getClassNameList className.contains(packageName) className = $className packageName = $packageName")
+//                  Log.d(TAG,"getClassNameList className.contains(packageName) className = $className packageName = $packageName")
                     classList.add(className)
                 }
             }
@@ -148,11 +148,10 @@ class XRouter private constructor() {
             Bundle().let { bundle ->
                 uri.queryParameterNames.let{queryParameterNames ->
                     for (key in queryParameterNames) {
-                        Log.i("zpan", "XRouter jumpActivity() key = $key")
                         val paramValue: String? = uri.getQueryParameter(key)
                         bundle.putString(key, paramValue)
                     }
-                    Log.d(TAG, "XRouter jumpActivity() hostPath = $hostPath ")
+//                  Log.d(TAG, "XRouter jumpActivity() hostPath = $hostPath ")
                     jumpActivity(context, url = hostPath, bundle = bundle)
                 }
             }
