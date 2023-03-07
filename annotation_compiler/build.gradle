@@ -1,8 +1,23 @@
 apply plugin: 'java-library'
 apply plugin: 'kotlin'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.dazeGitHub'
+apply plugin: 'maven-publish'
+
+//apply plugin: 'com.github.dcendents.android-maven'
+//group='com.github.dazeGitHub'
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.zyz.xrouter'
+                artifactId = 'zyz_xrouter'
+                version = rootProject.ext.android.versionName
+            }
+        }
+    }
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -23,5 +38,5 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+//sourceCompatibility = "1.7"
+//targetCompatibility = "1.7"
