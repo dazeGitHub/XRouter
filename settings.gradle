@@ -1,8 +1,8 @@
 rootProject.name = "XRouter"
 include ':app'
-include ':base'
-include ':common'
-include ':login'
+//include ':base'
+//include ':common'
+//include ':login'
 include ':annotation_compiler'
 include ':annotation'
 include ':xrouter'

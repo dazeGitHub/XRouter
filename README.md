@@ -2,6 +2,8 @@
 
 支持 kotlin 的注解处理器的简单的路由框架，在组件化项目中使用可以参考 : https://github.com/dazeGitHub/TestComponentDev3
 
+由于 main 发布到 jitpack 上报错, 所以 main 分支把没用的模块都删掉了, 完整的 XRouter 在 component_raw 分支上
+
 ##### 1. build.gradle 添加依赖
 
 ```groovy
