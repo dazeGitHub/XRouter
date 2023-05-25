@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
@@ -55,4 +56,15 @@ dependencies {
 //    }
 
     kapt project(path : ':annotation_compiler')
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'org.zyz.xrouter'
+            artifactId = 'zyz_xrouter'
+            version = '0.1'
+//            from components.java
+        }
+    }
 }
