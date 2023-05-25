@@ -4,19 +4,6 @@ apply plugin: 'kotlin-kapt'
 //apply plugin: 'com.github.dcendents.android-maven'
 //group='com.github.dazeGitHub'
 
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                groupId = 'com.zyz.xrouter'
-                artifactId = 'zyz_xrouter'
-                version = rootProject.ext.android.versionName
-            }
-        }
-    }
-}
-
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
     buildToolsVersion rootProject.ext.android.buildToolsVersion

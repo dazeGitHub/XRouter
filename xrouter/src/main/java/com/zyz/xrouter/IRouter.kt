@@ -11,4 +11,5 @@ package com.zyz.xrouter
  */
 interface IRouter {
     fun addActivity()
+    fun addFragment()
 }

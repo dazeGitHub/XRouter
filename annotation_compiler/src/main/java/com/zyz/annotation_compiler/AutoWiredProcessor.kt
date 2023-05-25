@@ -13,8 +13,9 @@ import javax.tools.JavaFileObject
 
 
 /**
- * 注解处理器，用来生成代码的
- * 使用前需要注册
+ * 这个是结合 XRouterKnife 使用的
+ * AutoWiredProcessor 用来生成 xxActivity_ViewBinding.kt , 而 XRouterKnife 中使用反射创建该 xxActivity_ViewBinding 对象, 并调用该对象的 bind() 方法
+ * xxActivity_ViewBinding.kt 路径为 : 项目根目录/login/build/generated/source/kapt/debug/com/smartcity/login/ui/activity/xxActivity_ViewBinding.kt
  */
 @AutoService(value = [Processor::class])
 class AutoWiredProcessor() : BaseProcessor() {
@@ -70,6 +71,7 @@ class AutoWiredProcessor() : BaseProcessor() {
         return false
     }
 
+    //生成的 XXActivity_ViewBinding.kt 路径为 :
     private fun generateActivityViewBinding(activityEleMap: MutableMap<String, MutableList<Element>>){
         messager?.printMessage(Diagnostic.Kind.WARNING, "AutoWiredProcessor generateActivityViewBinding activityVarEleMap.size = ${activityEleMap.size} \n")
 
