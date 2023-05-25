@@ -15,4 +15,8 @@ class IJsonTransferImp : IJsonTransfer {
             }
         }
     }
+
+    override fun transObj2Json(obj: Any): String {
+        return ""
+    }
 }

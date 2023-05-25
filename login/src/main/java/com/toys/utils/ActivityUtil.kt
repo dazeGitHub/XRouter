@@ -18,4 +18,8 @@ class ActivityUtil : IRouter {
         //大公司的 key 命名是有规范的
         XRouter.getInstance().addActivity("login/login", LoginActivity::class.java)
     }
+
+    override fun addFragment() {
+
+    }
 }

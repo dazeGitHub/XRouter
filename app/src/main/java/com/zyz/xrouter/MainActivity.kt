@@ -16,6 +16,6 @@ class MainActivity : BaseActivity() {
     }
 
     fun jumpLoginActivity(view: View?) {
-        XRouter.getInstance().jumpActivity(this,  url = Constants.RouterPath.LOGIN_TEST_PATH,scheme = null)
+        XRouter.getInstance().jumpPage(this,  url = Constants.RouterPath.LOGIN_TEST_PATH,)
     }
 }
