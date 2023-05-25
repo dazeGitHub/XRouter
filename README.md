@@ -7,9 +7,9 @@
 ##### 1. build.gradle 添加依赖
 
 ```groovy
-implementation 'com.github.dazeGitHub:XRouter:5.0.5'
-annotationProcessor 'com.github.dazeGitHub.XRouter:annotation_compiler:5.0.5'
-kapt 'com.github.dazeGitHub.XRouter:annotation_compiler:5.0.5'
+implementation 'com.github.dazeGitHub:XRouter:5.1.0'
+annotationProcessor 'com.github.dazeGitHub.XRouter:annotation_compiler:5.1.0'
+kapt 'com.github.dazeGitHub.XRouter:annotation_compiler:5.1.0'
 ```
 
 ##### 2. 使用路由
