@@ -4,8 +4,8 @@ ext{
             buildToolsVersion: "29.0.0",
             minSdkVersion    : 21,
             targetSdkVersion : 30,
-            versionCode : 15,
-            versionName : '5.1.1',
+            versionCode : 16,
+            versionName : '5.1.2',
             is_application : false,
     ]
 
